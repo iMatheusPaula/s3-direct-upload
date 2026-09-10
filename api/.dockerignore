@@ -1,0 +1,14 @@
+.dockerignore
+.DS_Store
+.editorconfig
+.gitattributes
+.gitignore
+
+.env
+.env.*
+
+Dockerfile
+README.md
+
+/node_modules
+/dist

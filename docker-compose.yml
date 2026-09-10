@@ -1,0 +1,36 @@
+name: s3-direct-upload
+
+services:
+  api:
+    container_name: api
+    build:
+      context: api
+      dockerfile: Dockerfile
+      target: dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api:/app
+      - /api/node_modules
+    depends_on:
+      - database
+
+  database:
+    container_name: database
+    image: postgres:18
+    environment:
+      POSTGRES_USER: "hono"
+      POSTGRES_PASSWORD: "p@ssw0rd"
+      POSTGRES_DB: "s3_direct_upload"
+    volumes:
+      - db_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_data:
+
+networks:
+  default:
+    name: s3-direct-upload
+    driver: bridge
