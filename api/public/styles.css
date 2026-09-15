@@ -1,0 +1,83 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font: 15px/1.5 ui-sans-serif, system-ui, sans-serif;
+  max-width: 640px;
+  margin: 3rem auto;
+  padding: 0 1.25rem;
+  color: #18181b;
+  background: #fafafa;
+}
+
+h1 {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+p.sub {
+  color: #71717a;
+  margin-top: 0;
+}
+
+form {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+input[type="file"] {
+  flex: 1;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: 6px;
+  background: #18181b;
+  color: #fff;
+  cursor: pointer;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: #e4e4e7;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge.completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge.failed,
+.badge.expired {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+a {
+  padding: 0.35rem 0;
+  font-size: 0.8rem;
+}

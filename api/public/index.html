@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Upload direto ao S3</title>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<h1>Upload direto ao S3</h1>
+<p class="sub">
+  O arquivo vai do navegador para o S3. A API só assina a URL e registra o
+  estado — os bytes não passam por ela.
+</p>
+
+<form id="form">
+  <input type="file" id="file" required/>
+  <button type="submit" id="submit">Enviar</button>
+</form>
+
+<div class="row">
+  <span>estado:</span>
+  <span id="status" class="badge">—</span>
+</div>
+
+<p id="message" role="status"></p>
+<a id="download" target="_blank" rel="noopener" hidden>Baixar arquivo</a>
+
+<script src="/app.js"></script>
+</body>
+</html>
