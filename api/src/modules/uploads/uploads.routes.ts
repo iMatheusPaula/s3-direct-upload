@@ -10,5 +10,10 @@ export const uploadsRoutes = new Hono()
   })
   .get("/:id", zValidator("param", idParamSchema), async (c) => {
     const upload = await getUpload(c.req.valid("param").id);
+
+    if (!upload) {
+      return c.json({ error: "Upload not found" }, 404);
+    }
+
     return c.json(upload);
   });
