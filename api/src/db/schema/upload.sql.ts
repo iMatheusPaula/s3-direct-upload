@@ -33,7 +33,8 @@ export const uploads = pgTable(
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .defaultNow()
-      .notNull(),
+      .notNull()
+      .$onUpdate(() => new Date()),
   },
   (t) => [uniqueIndex("uploads_object_key_unique").on(t.objectKey)],
 );

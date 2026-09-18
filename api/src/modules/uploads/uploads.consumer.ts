@@ -1,4 +1,9 @@
-import { ReceiveMessageCommand, SQSClient } from "@aws-sdk/client-sqs";
+import {
+  DeleteMessageCommand,
+  ReceiveMessageCommand,
+  SQSClient,
+} from "@aws-sdk/client-sqs";
+import { confirmUpload } from "@/modules/uploads/uploads.service";
 
 export async function consumeUploads() {
   const QUEUE_URL = process.env.SQS_QUEUE_URL;
@@ -32,8 +37,14 @@ export async function consumeUploads() {
       }
 
       for (const message of Messages) {
-        const body = JSON.parse(message.Body ?? "{}");
-        console.log(JSON.stringify(body, null, 2));
+        await confirmUpload(message.Body ?? "{}");
+
+        await sqs.send(
+          new DeleteMessageCommand({
+            QueueUrl: QUEUE_URL,
+            ReceiptHandle: message.ReceiptHandle,
+          }),
+        );
       }
 
       console.log("nothing was deleted; messages remain in the queue");

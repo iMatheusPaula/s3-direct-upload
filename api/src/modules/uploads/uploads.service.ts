@@ -5,7 +5,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/db/drizzle";
 import { uploads } from "@/db/schema";
 import type { PresignBody } from "./uploads.schema";
@@ -22,6 +22,10 @@ const URL_TTL_SECONDS = 15 * 60;
 function safeExtension(filename: string): string {
   const ext = extname(filename).toLowerCase();
   return /^\.[a-z0-9]{1,8}$/.test(ext) ? ext : "";
+}
+
+function urlDecode(str: string): string {
+  return decodeURIComponent(str.replace(/\+/g, " "));
 }
 
 export async function createPresignedUpload(input: PresignBody) {
@@ -89,4 +93,40 @@ export async function getUpload(id: string) {
     createdAt: row.createdAt,
     downloadUrl,
   };
+}
+
+export async function confirmUpload(body: string): Promise<void> {
+  const { Records } = JSON.parse(body);
+
+  if (!Array.isArray(Records)) {
+    return;
+  }
+
+  for (const record of Records) {
+    const object = record.s3?.object;
+
+    if (!object?.key) {
+      continue;
+    }
+
+    const objectKey = urlDecode(object.key);
+
+    const [updated] = await db
+      .update(uploads)
+      .set({
+        status: "COMPLETED",
+        actualSize: object.size ?? null,
+        etag: object.eTag ?? null,
+        completedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(uploads.objectKey, objectKey),
+          eq(uploads.status, "PENDING")
+        ),
+      )
+      .returning({ id: uploads.id });
+
+    console.log(updated ? `COMPLETED ${objectKey}` : `ignorado ${objectKey}`);
+  }
 }
