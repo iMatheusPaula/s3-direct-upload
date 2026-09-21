@@ -1,16 +1,18 @@
-# -------- stage deps --------
-FROM oven/bun:1.3 AS deps
-
+FROM oven/bun:1.4 AS base
 WORKDIR /app
 
-COPY package.json bun.lock* ./
+# -------- development dependencies --------
+FROM base AS deps
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
 
-RUN bun install
+# -------- production dependencies --------
+FROM base AS prod-deps
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile --production
 
 # -------- stage dev (with hot reload) --------
-FROM oven/bun:1.3 AS dev
-
-WORKDIR /app
+FROM base AS dev
 
 COPY --from=deps /app/node_modules ./node_modules
 
@@ -21,14 +23,18 @@ EXPOSE 3000
 CMD ["bun", "run", "dev"]
 
 # -------- stage prod --------
-FROM oven/bun:1.3 AS prod
+FROM base AS prod
 
-WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
 
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY package.json tsconfig.json ./
+COPY src ./src
+COPY public ./public
 
-COPY . .
+USER bun
 
 EXPOSE 3000
 
-CMD ["bun", "run", "start"]
+CMD ["bun", "run", "src/index.ts"]

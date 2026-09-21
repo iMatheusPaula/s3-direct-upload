@@ -3,7 +3,10 @@ import { serveStatic } from "hono/bun";
 import { uploadsRoutes } from "@/modules/uploads/uploads.routes";
 
 const api = new Hono()
-  .get("/", (c) => c.json({ status: "ok" }))
+  .get("/", (c) => {
+    c.header("Cache-Control", "no-store");
+    return c.json({ status: "ok" });
+  })
   .route("/uploads", uploadsRoutes);
 
 const app = new Hono();
